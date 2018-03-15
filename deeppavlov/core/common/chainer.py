@@ -19,26 +19,40 @@ from deeppavlov.core.models.component import Component
 
 
 class Chainer(Component):
-    def __init__(self, in_x, out_params, in_y=None, *args, **kwargs):
+    def __init__(self, in_x=None, out_params=None, in_y=None, *args, **kwargs):
         self.pipe = []
         self.train_pipe = []
-        self.in_x = in_x
-        self.in_y = in_y or []
-        self.out_params = out_params
+        if isinstance(in_x, str):
+            in_x = [in_x]
+        if isinstance(in_y, str):
+            in_y = [in_y]
+        if isinstance(out_params, str):
+            out_params = [out_params]
+        self.in_x = in_x or ['x']
+        self.in_y = in_y or ['y']
+        self.out_params = out_params or self.in_x
 
         self.forward_map = set(self.in_x)
         self.train_map = self.forward_map.union(self.in_y)
 
         self.main = None
 
-    def append(self, in_x, out_params, component, in_y=None, main=False):
+    def append(self, component, in_x=None, out_params=None, in_y=None, main=False):
+        if isinstance(in_x, str):
+            in_x = [in_x]
+        if isinstance(in_y, str):
+            in_y = [in_y]
+        if isinstance(out_params, str):
+            out_params = [out_params]
+        in_x = in_x or self.in_x
+        out_params = out_params or in_x
         if in_y is not None:
             main = True
             assert self.train_map.issuperset(in_x+in_y), ('Arguments {} are expected but only {} are set'
                                                           .format(in_x+in_y, self.train_map))
             preprocessor = Chainer(self.in_x, in_x+in_y, self.in_y)
             for t_in_x, t_out, t_component in self.train_pipe:
-                preprocessor.append(t_in_x, t_out, t_component)
+                preprocessor.append(t_component, t_in_x, t_out)
 
             def train_on_batch(*args, **kwargs):
                 preprocessed = preprocessor(*args, **kwargs)
