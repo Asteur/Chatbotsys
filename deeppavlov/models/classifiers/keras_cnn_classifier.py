@@ -32,7 +32,8 @@ def keras_cnn_classifier(build_fn_params=None):
     dense_size = params.get("dense_size", 100)
     coef_reg_den = params.get("coef_reg_den", 1e-4)
 
-    n_classes = params.get("n_classes", 7)
+    n_classes = params.get("n_classes", 2)
+    n_classes = n_classes if n_classes != 2 else 1  # only 1 output neuron for binary classification!
     is_multilabel = params.get("is_multilabel", False)
     activation_function = "sigmoid" if is_multilabel else "softmax"
 
@@ -40,7 +41,7 @@ def keras_cnn_classifier(build_fn_params=None):
     lr_decay = params.get("lr_decay", 0.1)
     optimizer = params.get("optimizer", "Adam")
     loss = params.get("loss", "binary_crossentropy")
-    metrics = params.get("metrics", ["binary_accuracy", fmeasure])
+    metrics = params.get("metrics", ["accuracy", "binary_accuracy", fmeasure])
 
     inp = Input(shape=(text_size, embedding_size))
     outputs = []
