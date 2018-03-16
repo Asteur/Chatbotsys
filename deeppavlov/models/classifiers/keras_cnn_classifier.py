@@ -33,6 +33,8 @@ def keras_cnn_classifier(build_fn_params=None):
     coef_reg_den = params.get("coef_reg_den", 1e-4)
 
     n_classes = params.get("n_classes", 7)
+    is_multilabel = params.get("is_multilabel", False)
+    activation_function = "sigmoid" if is_multilabel else "softmax"
 
     lr = params.get("lr", 0.01)
     lr_decay = params.get("lr_decay", 0.1)
@@ -46,9 +48,9 @@ def keras_cnn_classifier(build_fn_params=None):
         output_i = Conv1D(filters_cnn, kernel_size=kernel_sizes_cnn[i],
                           activation=None,
                           kernel_regularizer=l2(coef_reg_cnn),
-                          padding='same')(inp)
+                          padding="same")(inp)
         output_i = BatchNormalization()(output_i)
-        output_i = Activation('relu')(output_i)
+        output_i = Activation("relu")(output_i)
         output_i = GlobalMaxPooling1D()(output_i)
         outputs.append(output_i)
 
@@ -58,12 +60,12 @@ def keras_cnn_classifier(build_fn_params=None):
     output = Dense(dense_size, activation=None,
                    kernel_regularizer=l2(coef_reg_den))(output)
     output = BatchNormalization()(output)
-    output = Activation('relu')(output)
+    output = Activation("relu")(output)
     output = Dropout(rate=dropout_rate)(output)
     output = Dense(n_classes, activation=None,
                    kernel_regularizer=l2(coef_reg_den))(output)
     output = BatchNormalization()(output)
-    act_output = Activation('sigmoid')(output)  # not softmax!
+    act_output = Activation(activation_function)(output)
     model = Model(inputs=inp, outputs=act_output)
 
     model.compile(optimizer=eval(optimizer)(lr=lr, decay=lr_decay),
