@@ -31,6 +31,7 @@ import deeppavlov.models.tokenizers.spacy_tokenizer
 import deeppavlov.skills.go_bot.go_bot
 import deeppavlov.skills.go_bot.network
 import deeppavlov.skills.go_bot.tracker
+import deeppavlov.skills.dummy_skill.dummy_skill
 import deeppavlov.vocabs.typos
 import deeppavlov.dataset_readers.ranking_dataset_reader
 import deeppavlov.datasets.ranking_dataset

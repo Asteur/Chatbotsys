@@ -1,0 +1,13 @@
+{
+  "chainer":{
+    "in": ["utterance"],
+    "pipe": [
+      {
+        "name": "dummy_skill",
+        "in": ["utterance"],
+        "out": ["response"]
+      }
+    ],
+    "out": ["response"]
+  }
+}
