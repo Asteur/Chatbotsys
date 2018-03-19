@@ -69,3 +69,8 @@ train_config = {
     }
 
 _train_batches(chainer, ds, train_config, [('f1', ner_f1), ('accuracy', per_item_accuracy)])
+model.load()
+
+x, y = ds.iter_all('test')
+
+print(ner_f1(y, chainer(x)))
