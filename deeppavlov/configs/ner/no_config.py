@@ -45,8 +45,7 @@ ner_params = {"save_path": 'ner_dstc2_model/ner_model',
               "use_batch_norm": True,
               "use_crf": True,
               "learning_rate": 1e-3,
-              "dropout_rate": 0.5,
-              "vocabs": {}}
+              "dropout_rate": 0.5}
 
 model = NER(**ner_params)
 
@@ -69,8 +68,10 @@ train_config = {
     }
 
 _train_batches(chainer, ds, train_config, [('f1', ner_f1), ('accuracy', per_item_accuracy)])
-model.load()
+chainer.load()
+
+x, y = ds.iter_all('valid')
+print('valid', ner_f1(y, chainer(x)))
 
 x, y = ds.iter_all('test')
-
-print(ner_f1(y, chainer(x)))
+print('test', ner_f1(y, chainer(x)))

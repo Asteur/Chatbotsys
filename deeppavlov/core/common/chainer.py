@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import inspect
 
 from deeppavlov.core.common.errors import ConfigError
 from deeppavlov.core.models.component import Component
@@ -116,3 +117,8 @@ class Chainer(Component):
 
     def save(self):
         self.get_main_component().save()
+
+    def load(self):
+        for component in self.pipe:
+            if inspect.ismethod(getattr(component, 'load', None)):
+                component.load()
