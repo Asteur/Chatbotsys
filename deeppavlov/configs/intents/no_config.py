@@ -92,6 +92,7 @@ class IntentsWrapper:
 
         self.model = KerasIntentModel(self.model_params, self.ft, NLTKTokenizer(), self.classes, mode='infer',
                                       save_path=self.save_path, load_path=self.save_path)
+        self.classes = self.model.classes
 
         self.ready = True
 
@@ -103,4 +104,5 @@ class IntentsWrapper:
 
         self.model = KerasIntentModel(self.model_params, self.ft, NLTKTokenizer(), self.classes, mode='infer',
                                       save_path=self.save_path, load_path=load_path)
+        self.classes = self.model.classes
         self.ready = True
