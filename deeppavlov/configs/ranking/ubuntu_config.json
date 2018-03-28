@@ -47,7 +47,7 @@
     "out": ["y_predicted"]
   },
   "train": {
-    "epochs": 10,
+    "epochs": 20,
     "batch_size": 256,
     "metrics": ["r@1", "r@2", "r@5", "rank_response", "loss"],
     "validation_patience": 5,
