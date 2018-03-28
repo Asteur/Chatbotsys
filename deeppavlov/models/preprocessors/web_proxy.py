@@ -25,7 +25,7 @@ class Proxy(Component):
         base.attrib['target'] = '_blank'
         if 'href' not in base.attrib:
             base.attrib['href'] = base_url
-        return html.tostring(tree)
+        return html.tostring(tree).decode()
 
     def __call__(self, urls):
         res = []
