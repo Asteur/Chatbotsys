@@ -71,7 +71,7 @@ class KerasIntentModel(KerasModel):
 
         # Tokenizer and vocabulary of classes
         self.tokenizer = tokenizer
-        if classes:
+        if classes is not None:
             self.classes = np.sort(np.array(list(classes)))
         else:
             self.classes = np.sort(np.array(list(vocabs["classes_vocab"].keys())))

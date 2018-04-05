@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from typing import Iterable
 
@@ -12,45 +13,40 @@ from deeppavlov.models.tokenizers.nltk_tokenizer import NLTKTokenizer
 
 
 class IntentsNNWrapper(NNWrapper):
-    def __init__(self, emb_path: [Path, str], classes: Iterable=None,
+    def __init__(self, emb_path: [Path, str], classes: Iterable = None,
                  save_dir='intents/simple_classifier'):
-        super().__init__()
+        super().__init__(save_dir)
 
         self.ft = FasttextEmbedder(load_path=emb_path)
 
         self.classes = classes
-        self.save_path = expand_path(save_dir) / 'model'
+        self.save_dir = expand_path(save_dir)
 
         self.model: KerasIntentModel = None
         self.model_params = {
-          "kernel_sizes_cnn": [
-            1,
-            2,
-            3
-          ],
-          "filters_cnn": 256,
-          "lear_metrics": [
-            "binary_accuracy",
-            "fmeasure"
-          ],
-          "confident_threshold": 0.5,
-          "optimizer": "Adam",
-          "lear_rate": 0.01,
-          "lear_rate_decay": 0.1,
-          "loss": "binary_crossentropy",
-          "text_size": 15,
-          "coef_reg_cnn": 1e-4,
-          "coef_reg_den": 1e-4,
-          "dropout_rate": 0.5,
-          "epochs": 1000,
-          "dense_size": 100,
-          "model_name": "cnn_model"
+            "kernel_sizes_cnn": [
+                1,
+                2,
+                3
+            ],
+            "filters_cnn": 256,
+            "lear_metrics": [
+                "binary_accuracy",
+                "fmeasure"
+            ],
+            "confident_threshold": 0.5,
+            "optimizer": "Adam",
+            "lear_rate": 0.01,
+            "lear_rate_decay": 0.1,
+            "loss": "binary_crossentropy",
+            "text_size": 15,
+            "coef_reg_cnn": 1e-4,
+            "coef_reg_den": 1e-4,
+            "dropout_rate": 0.5,
+            "epochs": 1000,
+            "dense_size": 100,
+            "model_name": "cnn_model"
         }
-
-        # self.chainer = Chainer(in_x='text', in_y='classes', out_params='classes_predicted')
-
-    def _prepare_components(self, load_dir=None, generate_batches=None, batch_size=1, *args, **kwargs):
-        pass
 
     def _train_on_batch(self, batch):
         self.model.train_on_batch(*batch)
@@ -66,9 +62,6 @@ class IntentsNNWrapper(NNWrapper):
         accuracy = correct / examples_len if examples_len > 0 else 0
         return {'accuracy': accuracy}
 
-    def save(self, save_dir):
-        self.model.save()
-
     def __call__(self, batch, predict_proba=False):
         if not self.ready:
             raise RuntimeError('Tried to run not fitted classifier. Fit or load it first')
@@ -80,50 +73,31 @@ class IntentsNNWrapper(NNWrapper):
     def predict_proba(self, batch):
         return self(batch, predict_proba=True)
 
-    def fit(self, x, y, val_x=None, val_y=None, batch_size=64, epochs=100, patience=5):
-        validate = val_x and val_y
+    def save(self, save_dir=None):
+        if save_dir:
+            save_dir = expand_path(save_dir)
+        with self.save_dir.joinpath('classes.json').open('w') as f:
+            json.dump(self.classes, f)
+        self.model.save(save_dir / 'model')
 
-        if not self.classes:
-            self.classes = {label for labels in y for label in labels}
+    def _prepare_components(self, load_dir=None, generate_batches=None, batch_size=1, *args, **kwargs):
+        self.save_dir = expand_path(self.save_dir)
+        model_load_path = None
+        if load_dir is not None:
+            load_dir = expand_path(load_dir)
+            model_load_path = load_dir / 'model'
+            with load_dir.joinpath('classes.json').open as f:
+                self.classes = json.load(f)
 
-        data = {
-            'train': list(zip(x, y))
-        }
-        if validate:
-            data['valid'] = list(zip(val_x, val_y))
-
-        del x, y, val_x, val_y
-
-        ds_iterator = BasicDatasetIterator(data)
-
-        self.model = KerasIntentModel(self.model_params, self.ft, NLTKTokenizer(), self.classes, mode='train',
-                                      save_path=self.save_path)
-
-        train_config = {
-            "epochs": epochs,
-            "batch_size": batch_size,
-            "validation_patience": patience,
-            "val_every_n_epochs": validate and 1 or 0,
-            "log_every_n_epochs": 1,
-            "validate_best": validate,
-            "test_best": False
-        }
-
-        _train_batches(self.model, ds_iterator, train_config, [('accuracy', sets_accuracy)])
-
-        self.model = KerasIntentModel(self.model_params, self.ft, NLTKTokenizer(), self.classes, mode='infer',
-                                      save_path=self.save_path, load_path=self.save_path)
-        self.classes = self.model.classes
-
-        self.ready = True
-
-    def load(self, load_path=None):
-        if load_path:
-            load_path = expand_path(load_path)
+        if generate_batches:
+            mode = 'train'
+            if self.classes is None:
+                self.classes = {label
+                                for _, y in generate_batches(batch_size=1, shuffle=False)
+                                for labels in y for label in labels}
         else:
-            load_path = self.save_path
+            mode = 'infer'
 
-        self.model = KerasIntentModel(self.model_params, self.ft, NLTKTokenizer(), self.classes, mode='infer',
-                                      save_path=self.save_path, load_path=load_path)
+        self.model = KerasIntentModel(self.model_params, self.ft, NLTKTokenizer(), self.classes, mode=mode,
+                                      save_path=self.save_dir / 'model', load_path=model_load_path)
         self.classes = self.model.classes
-        self.ready = True

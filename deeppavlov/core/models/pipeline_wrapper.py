@@ -33,22 +33,27 @@ class BasicWrapper(metaclass=ABCMeta):
 
 
 class NNWrapper(BasicWrapper):
-    def __init__(self):
+    def __init__(self, save_dir):
         self.ready = False
+        self.save_dir = save_dir
+
         self._epochs_done = 0
         self._batches_seen = 0
 
-    def load(self, load_dir):
+    def load(self, load_dir=None):
+        if load_dir is not None:
+            load_dir = self.save_dir
         self._prepare_components(load_dir=load_dir)
 
     def fit(self, generate_train_batches, batch_size=1,
             generate_valid_batches=None,
-            save_dir=None, load_dir=None,
+            load_dir=None,
             epochs_limit=-1, batches_limit=-1,
             log_every_n_batches=-1, log_every_n_epochs=-1, eval_on_n_train_batches=1,
             validate_every_n_epochs=-1,
             *args, **kwargs):
         self._prepare_components(generate_batches=generate_train_batches, batch_size=batch_size, load_dir=load_dir)
+        self.ready = True
         if generate_valid_batches is None and validate_every_n_epochs > 0:
             validate_every_n_epochs = -1
             log.warn('Cannot validate if no generator function is provided for the valid data')
