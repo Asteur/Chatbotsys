@@ -15,7 +15,7 @@ class BasicWrapper(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def fit(self, generate_batches, batch_size=1, save_dir=None,
+    def fit(self, generate_batches, batch_size=1,
             *args, **kwargs):
         pass
 
