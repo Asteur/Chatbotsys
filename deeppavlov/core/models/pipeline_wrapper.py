@@ -52,6 +52,9 @@ class NNWrapper(BasicWrapper):
             log_every_n_batches=-1, log_every_n_epochs=-1, eval_on_n_train_batches=1,
             validate_every_n_epochs=-1,
             *args, **kwargs):
+        self._epochs_done = 0
+        self._batches_seen = 0
+
         self._prepare_components(generate_batches=generate_train_batches, batch_size=batch_size, load_dir=load_dir)
         self.ready = True
         if generate_valid_batches is None and validate_every_n_epochs > 0:
@@ -62,11 +65,14 @@ class NNWrapper(BasicWrapper):
         start_time = time.time()
         try:
             while True:
+                if -1 < epochs_limit <= self._epochs_done:
+                    break
                 for batch in generate_train_batches(batch_size=batch_size, shuffle=True):
                     if new_epoch and 0 < log_every_n_epochs and self._epochs_done % log_every_n_epochs == 0\
                             or 0 < log_every_n_batches and self._batches_seen > 0\
                             and self._batches_seen % log_every_n_batches == 0:
                         report = {
+                            'data_type': 'train',
                             'epochs_done': self._epochs_done,
                             'batches_seen': self._batches_seen,
                             'time_spent': str(datetime.timedelta(seconds=round(time.time() - start_time + 0.5)))
@@ -90,8 +96,15 @@ class NNWrapper(BasicWrapper):
                     break
                 self._epochs_done += 1
                 new_epoch = True
-                if -1 < epochs_limit <= self._epochs_done:
-                    break
+                if -1 < validate_every_n_epochs and self._epochs_done % validate_every_n_epochs == 0:
+                    report = {
+                        'data_type': 'valid',
+                        'epochs_done': self._epochs_done,
+                        'batches_seen': self._batches_seen,
+                        'time_spent': str(datetime.timedelta(seconds=round(time.time() - start_time + 0.5))),
+                        'metrics': self.evaluate(generate_valid_batches(batch_size=batch_size, shuffle=False))
+                    }
+                    print(json.dumps(report, ensure_ascii=False))
         except KeyboardInterrupt:
             log.info('Interrupted training')
 
