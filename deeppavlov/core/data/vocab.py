@@ -41,38 +41,30 @@ class DefaultVocabulary(Estimator):
         self._max_tokens = max_tokens
         self._min_count = min_count
         self.freqs = None
+        self._t2i = {}
+        self._i2t = []
         if self.load_path:
             self.load()
 
-    def __getitem__(self, key):
-        if isinstance(key, (int, np.integer)):
-            return self._i2t[key]
-        elif isinstance(key, str):
-            return self._t2i[key]
-        else:
-            raise NotImplementedError("not implemented for type `{}`".format(type(key)))
-
-    def __contains__(self, item):
-        return item in self._t2i
-
-    def __len__(self):
-        return len(self.freqs)
-
-    def keys(self):
-        return (k for k, v in self.freqs.most_common())
-
-    def values(self):
-        return (v for k, v in self.freqs.most_common())
-
-    def items(self):
-        return self.freqs.most_common()
-
     def fit(self, tokens):
         self.freqs = Counter(chain(*tokens))
-        # toks_freqs = self.freqs.most_common()[:self.]
+        self._t2i = {}
+        self._i2t = []
+        count = 0
+        for special_token in self.special_tokens:
+            self._t2i[special_token] = count
+            self._i2t.append(special_token)
+            count += 1
+        for token, freq in self.freqs.most_common():
+            self._t2i[token] = count
+            self._i2t.append(token)
+            count += 1
 
     def __call__(self, token_batch, **kwargs):
-        return [self[s] for s in token_batch]
+        indices_batch = []
+        for token_sequence in token_batch:
+            indices_batch.append([self[s] for s in token_sequence])
+        return indices_batch
 
     def save(self):
         log.info("[saving vocabulary to {}]".format(self.save_path))
@@ -99,3 +91,26 @@ class DefaultVocabulary(Estimator):
                         self.__class__.__name__))
         else:
             raise ConfigError("`load_path` for {} is not provided!".format(self))
+
+    def keys(self):
+        return (k for k, v in self.freqs.most_common())
+
+    def values(self):
+        return (v for k, v in self.freqs.most_common())
+
+    def items(self):
+        return self.freqs.most_common()
+
+    def __getitem__(self, key):
+        if isinstance(key, (int, np.integer)):
+            return self._i2t[key]
+        elif isinstance(key, str):
+            return self._t2i[key]
+        else:
+            raise NotImplementedError("not implemented for type `{}`".format(type(key)))
+
+    def __contains__(self, item):
+        return item in self._t2i
+
+    def __len__(self):
+        return len(self.freqs)
