@@ -3,10 +3,6 @@
     "in": [
       "question_raw"
     ],
-    "in_y": [
-      "ans_raw",
-      "ans_raw_start"
-    ],
     "out": [
       "ans_predicted"
     ],
