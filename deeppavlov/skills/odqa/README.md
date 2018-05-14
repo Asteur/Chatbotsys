@@ -53,7 +53,7 @@ Read about interacting the reader in our separate [reader tutorial](https://gith
 The ODQA configs suit only model inferring purposes. The [ranker config](#the-ranker-config) should be used for ranker training
 and the [reader config](https://github.com/deepmipt/DeepPavlov/tree/master/deeppavlov/models/squad#config-components) should be used for reader training.
 
-#### The ranker config
+### Ranker
 
 The ranker config for **English** language can be found at `deeppavlov/configs/odqa/en_ranker_prod.json`
 
@@ -82,7 +82,7 @@ The ranker config for **Russian** language can be found at `deeppavlov/configs/o
     * **_test_best_** - is ignored, any value
     * **_batch_size_** - how many Wikipedia articles should return the dataset iterator in a single batch
 
-#### The ODQA config
+### ODQA
 
 Default ODQA config for **English** language is `deeppavlov/configs/odqa/en_odqa_infer_prod.json`
 
@@ -96,10 +96,42 @@ However, main inputs and outputs are worth explaining:
     * **_in_** - pipeline input data (questions)
     * **_out_** - pipeline output data (answers)
 
+## Pretrained models
+
+Wikipedia data and pretrained ODQA models are downloaded in `deeppavlov/download/odqa` by default.
+
+### enwiki.db
+
+**enwiki.db** SQLite database consists of **5159530 Wikipedia articles**
+and is built by the following steps:
+1. Download a Wikipedia dump file. We took the latest [enwiki](https://dumps.wikimedia.org/enwiki/20180201)
+ (from 2018-02-11)
+2. Unpack and extract the articles with [WikiExtractor](https://github.com/attardi/wikiextractor)
+ (with `--json`, `--no-templates`, `--filter_disambig_pages` options)
+3. Build a database.
+
+### enwiki_tfidf_matrix.npz
+
+ **enwiki_tfidf_matrix.npz** is a full Wikipedia tf-idf matrix of size `hash_size x number of documents` which is
+ `2**24 x 5159530`. This matrix is built with `deeppavlov/models/vectorizers/hashing_tfidf_vectorizer.HashingTfidfVectorizer`
+ class.
+
+### ruwiki.db
+
+**ruwiki.db** SQLite database consists of **1463888 Wikipedia articles**
+and is built by the following steps:
+1. Download a Wikipedia dump file. We took the latest [ruwiki](https://dumps.wikimedia.org/ruwiki/20180401)
+(from 2018-04-01)
+2. Unpack and extract the articles with [WikiExtractor](https://github.com/attardi/wikiextractor)
+(with `--json`, `--no-templates`, `--filter_disambig_pages` options)
+3. Build a database.
+
+### ruwiki_tfidf_matrix.npz
+
+ **ruwiki_tfidf_matrix.npz** is a full Wikipedia tf-idf matrix of size `hash_size x number of documents` which is
+ `2**24 x 1463888`. This matrix is built with `deeppavlov/models/vectorizers/hashing_tfidf_vectorizer.HashingTfidfVectorizer`
+ class.
+
 
 ## References
-
-
-
-## Pretrained models (ranker, reader):
 
