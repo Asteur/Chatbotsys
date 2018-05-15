@@ -14,25 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import numpy as np
-
-from deeppavlov.core.common.registry import register
 from deeppavlov.core.models.component import Component
+from deeppavlov.core.common.registry import register
 
 
-@register('bow')
-class BoWEncoder(Component):
+@register("split_tokenizer")
+class SplitTokenizer(Component):
 
     def __init__(self, *args, **kwargs):
         pass
 
-    def _encode(self, utterance, vocab):
-        bow = np.zeros([len(vocab)], dtype=np.int32)
-        for word in utterance.split(' '):
-            if word in vocab:
-                idx = vocab[word]
-                bow[idx] += 1
-        return bow
-
-    def __call__(self, batch, vocab, *args):
-        return [self._encode(utterance, vocab) for utterance in batch]
+    def __call__(self, batch, *args, **kwargs):
+        if isinstance(batch, (list, tuple)):
+            return [self(line) for line in batch]
+        else:
+            return batch.split()
