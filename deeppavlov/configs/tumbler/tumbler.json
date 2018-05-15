@@ -1,0 +1,23 @@
+{
+  "chainer": {
+    "in": ["x"],
+    "out": ["y_predicted"],
+    "pipe": [
+      {
+        "in": ["x"],
+        "out": ["y_predicted"],
+        "main": true,
+        "name": "skill_tumbler",
+        "debug": false,
+        "vec_path": "tumbler/tfidf.pkl",
+        "save_path": "tumbler/model.pkl",
+        "load_path": "tumbler/model.pkl"
+      }
+    ]
+  },
+  "metadata": {
+    "download": [
+      "http://lnsigo.mipt.ru/export/deeppavlov_data/tumbler.tar.gz"
+    ]
+  }
+}

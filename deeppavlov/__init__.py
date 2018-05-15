@@ -74,6 +74,7 @@ import deeppavlov.models.preprocessors.capitalization
 import deeppavlov.models.preprocessors.field_getter
 import deeppavlov.models.preprocessors.sanitizer
 import deeppavlov.models.preprocessors.lazy_tokenizer
+import deeppavlov.models.classifiers.tumbler.tumbler
 
 
 import deeppavlov.metrics.accuracy
