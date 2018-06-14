@@ -32,7 +32,7 @@ class RankDocScoreIdTuplifier(Component):
         all_results = []
         for triple in zip(docs, scores, ids):
             tuples = list(zip(triple[0], triple[1], triple[2]))
-            tuples.sort(key=itemgetter(2))
+            tuples.sort(key=itemgetter(1))
             tuples = tuples[::-1]
             result = []
             for i, item in enumerate(tuples, 1):
