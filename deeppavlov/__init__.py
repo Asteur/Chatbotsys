@@ -21,6 +21,9 @@ assert sys.hexversion >= 0x3060000, 'Does not work in python3.5 or lower'
 import deeppavlov.dataset_iterators.sqlite_iterator
 import deeppavlov.models.tokenizers.spacy_tokenizer
 import deeppavlov.models.tokenizers.ru_tokenizer
+import deeppavlov.models.supplementary.query_paragraph_tuplifier
+import deeppavlov.models.supplementary.rank_doc_score_tuplifier
+import deeppavlov.vocabs.wiki_sqlite
 import deeppavlov.skills.odqa.tfidf_ranker
 import deeppavlov.core.common.log
 import deeppavlov.download

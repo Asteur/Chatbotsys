@@ -1,9 +1,12 @@
 """
 Copyright 2017 Neural Networks and Deep Learning lab, MIPT
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
+
     http://www.apache.org/licenses/LICENSE-2.0
+
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,6 +17,7 @@ limitations under the License.
 from typing import List
 
 import numpy as np
+from scipy.sparse import csr_matrix
 
 from deeppavlov.core.common.registry import register
 from deeppavlov.core.common.log import get_logger
@@ -32,7 +36,7 @@ class TfidfRanker(Estimator):
     def get_main_component(self):
         return self
 
-    def __init__(self, vectorizer: HashingTfIdfVectorizer, top_n=5, active: bool = True, **kwargs):
+    def __init__(self, vectorizer: HashingTfIdfVectorizer, top_n=5, active: bool=True, **kwargs):
         """
         :param vectorizer: a tfidf vectorizer class
         :param top_n: top n of document ids to return
@@ -76,7 +80,7 @@ class TfidfRanker(Estimator):
         q_tfidfs = self.vectorizer(questions)
 
         for q_tfidf in q_tfidfs:
-            scores = q_tfidf * self.tfidf_matrix
+            scores: csr_matrix = q_tfidf * self.tfidf_matrix
             scores = np.squeeze(
                 scores.toarray() + 0.0001)  # add a small value to eliminate zero scores
 
@@ -111,5 +115,3 @@ class TfidfRanker(Estimator):
 
     def load(self):
         self.vectorizer.load()
-
-
