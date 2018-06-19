@@ -31,7 +31,7 @@
       },
       {
         "name": "squad_wrapper",
-        "config_path1": "../deeppavlov/configs/squad/squad_ru.json",
+        "squad_config_path": "../deeppavlov/configs/squad/squad_ru.json",
         "in": ["question_raw", "contexts"],
         "out": ["answers"]
       }
@@ -43,7 +43,16 @@
     },
     "download": [
       "http://lnsigo.mipt.ru/export/deeppavlov_data/ru_odqa.tar.gz",
-      "http://lnsigo.mipt.ru/export/deeppavlov_data/squad_model_ru.tar.gz"
+      "http://lnsigo.mipt.ru/export/deeppavlov_data/squad_model_ru.tar.gz",
+      {
+        "url": "http://lnsigo.mipt.ru/export/embeddings/ft_native_300_ru_wiki_lenta_nltk_word_tokenize/ft_native_300_ru_wiki_lenta_nltk_word_tokenize.vec",
+        "subdir": "embeddings"
+      },
+      {
+        "url": "http://lnsigo.mipt.ru/export/embeddings/ft_native_300_ru_wiki_lenta_nltk_word_tokenize-char.vec",
+        "subdir": "embeddings"
+      }
+
     ]
   }
 }
