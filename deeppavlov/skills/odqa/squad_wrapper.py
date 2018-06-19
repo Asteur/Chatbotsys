@@ -11,19 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import sqlite3
-from typing import List, Any, Dict, Optional
-from random import Random
-from pathlib import Path
-import os
-
-from overrides import overrides
-
 from deeppavlov.core.common.log import get_logger
 from deeppavlov.core.common.registry import register
 from deeppavlov.core.common.file import read_json
-from deeppavlov.core.data.utils import download
-from deeppavlov.core.commands.utils import expand_path
 from deeppavlov.core.models.component import Component
 from deeppavlov.core.commands.infer import build_model_from_config
 
@@ -36,8 +26,8 @@ class SquadWrapper(Component):
     Load a SQLite database, read data batches and get docs content.
     """
 
-    def __init__(self, config_path1, *args, **kwargs):
-        self.squad_pipeline = build_model_from_config(read_json(os.path.join(os.path.dirname(__file__), "../../configs/squad/squad_ru.json")))
+    def __init__(self, squad_config_path, *args, **kwargs):
+        self.squad_pipeline = build_model_from_config(read_json(squad_config_path))
 
     def __call__(self, question, contexts, *args, **kwargs):
         answers = []
