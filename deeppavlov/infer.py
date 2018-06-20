@@ -30,14 +30,9 @@ log = get_logger(__name__)
 
 CONFIG_PATH = str(get_project_root()) + '/deeppavlov/configs/odqa/generic_ranker.json'
 
-PERIOD = timedelta(minutes=1)
-
-
-def reset_time():
-    global NEXT_TIME
-    global MINUTES
-    NEXT_TIME = datetime.now() + PERIOD
-    MINUTES = 0
+PERIOD = timedelta(minutes=5)
+NEXT_TIME = datetime.now() + PERIOD
+MINUTES = 0
 
 
 def build_chainer(config_path):
@@ -54,7 +49,8 @@ def check_data_changed():
         NEXT_TIME += PERIOD
         return True
     else:
-        reset_time()
+        NEXT_TIME = datetime.now() + PERIOD
+        MINUTES = 0
         return False
 
 
@@ -71,8 +67,6 @@ def run(chainer):
 
 
 def main(chainer):
-    global NEXT_TIME
-    global MINUTES
     try:
         run(chainer)
     except Exception:
@@ -80,6 +74,5 @@ def main(chainer):
 
 
 if __name__ == "__main__":
-    reset_time()
     model = build_chainer(CONFIG_PATH)
     main(model)
