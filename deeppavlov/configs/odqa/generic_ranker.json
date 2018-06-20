@@ -1,15 +1,15 @@
 {
   "dataset_reader": {
     "class": "deeppavlov.dataset_readers.odqa_reader:ODQADataReader",
-    "data_path": "/path/to/data/folder",
-    "save_path": "/path/to/output/example.db",
+    "data_path": "/media/olga/Data/projects/ODQA/data/biologiya",
+    "save_path": "/media/olga/Data/projects/ODQA/data/test/data.db",
     "dataset_format": "txt"
   },
   "dataset_iterator": {
     "name": "sqlite_iterator",
     "data_dir": "pmef",
     "shuffle": false,
-    "load_path": "/path/to/output/example.db"
+    "load_path": "/media/olga/Data/projects/ODQA/data/test/data.db"
   },
   "chainer": {
     "in": [
@@ -38,8 +38,8 @@
           "fit_on_batch": [
             "questions_raw"
           ],
-          "save_path": "pmef/ru_new_tfidf.npz",
-          "load_path": "pmef/ru_new_tfidf.npz",
+          "save_path": "/media/olga/Data/projects/ODQA/data/test/tfidf.npz",
+          "load_path": "/media/olga/Data/projects/ODQA/data/test/tfidf.npz",
           "tokenizer": {
             "name": "ru_tokenizer",
             "lemmas": true,
@@ -61,7 +61,7 @@
         "data_dir": "pmef",
         "shuffle": false,
         "join_docs": true,
-        "load_path": "/path/to/output/example.db"
+        "load_path": "/media/olga/Data/projects/ODQA/data/test/data.db"
       }
     ]
   },
