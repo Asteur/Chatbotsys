@@ -56,6 +56,9 @@ class RussianTokenizer(Component):
         if stopwords == 'NLTK_STOPWORDS':
             stopwords = set(nltk_stopwords.words('russian'))
 
+        if replace is None:
+            replace = {}
+
         self.stopwords = stopwords or []
         self.tokenizer = ToktokTokenizer()
         self.lemmatizer = pymorphy2.MorphAnalyzer()
