@@ -18,7 +18,7 @@ import argparse
 from pathlib import Path
 import sys
 import os
-import json
+import time
 
 p = (Path(__file__) / ".." / "..").resolve()
 sys.path.append(str(p))
@@ -66,11 +66,14 @@ def generate_config(template_path):
 def train(config):
     try:
         train_evaluate_model_from_config(config, pass_config=True)
-        print("Successfully trained and stored result in {}".format(output_path))
+        log.info("Successfully trained and stored result in {}".format(output_path))
     except Exception:
         raise
 
 
 if __name__ == "__main__":
-    new_config = generate_config(TEMPLATE_CONFIG_PATH)
-    train(new_config)
+    while True:
+        new_config = generate_config(TEMPLATE_CONFIG_PATH)
+        train(new_config)
+        log.info("Sleeping...\n")
+        time.sleep(180)
