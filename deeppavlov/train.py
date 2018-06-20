@@ -18,13 +18,14 @@ import argparse
 from pathlib import Path
 import sys
 import os
+import json
 
 p = (Path(__file__) / ".." / "..").resolve()
 sys.path.append(str(p))
 
 from deeppavlov.core.commands.train import train_evaluate_model_from_config
 from deeppavlov.core.commands.utils import get_project_root
-from deeppavlov.core.common.file import read_json
+from deeppavlov.core.common.file import read_json, save_json
 from deeppavlov.core.common.log import get_logger
 
 log = get_logger(__name__)
@@ -37,23 +38,39 @@ input_path = Path(args.input_path).resolve()
 output_path = Path(args.output_path).resolve()
 output_path.mkdir(exist_ok=True)
 
-CONFIG_PATH = str(get_project_root()) + '/deeppavlov/configs/odqa/ru_ranker.json'
-config = read_json(CONFIG_PATH)
-config['dataset_reader']['data_path'] = input_path
-db_path = os.path.join(output_path, 'data.db')
-config['dataset_reader']['save_path'] = config['dataset_iterator']['load_path'] = \
-config['chainer']['pipe'][1]['load_path'] = db_path
+TEMPLATE_CONFIG_PATH = str(get_project_root()) + '/deeppavlov/configs/odqa/ru_ranker.json'
+NEW_CONFIG_PATH = str(get_project_root()) + '/deeppavlov/configs/odqa/generic_ranker.json'
 
-try:
-    os.remove(db_path)
-except OSError:
-    pass
-	
-config['chainer']['pipe'][0]['vectorizer']['save_path'] = config['chainer']['pipe'][0]['vectorizer'][
-    'load_path'] = os.path.join(output_path, 'tfidf.npz')
 
-try:
-    train_evaluate_model_from_config(config, pass_config=True)
-    print("Successfully trained and stored result in {}".format(output_path))
-except Exception:
-    raise
+def generate_config(template_path):
+    config = read_json(template_path)
+    config['dataset_reader']['data_path'] = str(input_path)
+    db_path = os.path.join(output_path, 'data.db')
+    config['dataset_reader']['save_path'] = config['dataset_iterator']['load_path'] = \
+        config['chainer']['pipe'][1]['load_path'] = db_path
+
+    try:
+        os.remove(db_path)
+    except OSError:
+        pass
+
+    config['chainer']['pipe'][0]['vectorizer']['save_path'] = \
+        config['chainer']['pipe'][0]['vectorizer'][
+            'load_path'] = os.path.join(output_path, 'tfidf.npz')
+
+    save_json(config, NEW_CONFIG_PATH)
+
+    return config
+
+
+def train(config):
+    try:
+        train_evaluate_model_from_config(config, pass_config=True)
+        print("Successfully trained and stored result in {}".format(output_path))
+    except Exception:
+        raise
+
+
+if __name__ == "__main__":
+    new_config = generate_config(TEMPLATE_CONFIG_PATH)
+    train(new_config)
