@@ -47,10 +47,10 @@ def main():
             except Exception:
                 answer = "Я не знаю ответ."
                 try:
-                    writer.writerow([query] + [answer*3])
+                    writer.writerow([query] + [answer]*3)
                 except Exception:
-                    writer.writerow(["Неизвестный вопрос."] + [answer*3])
-                print("\n".format(answer) * 3)
+                    writer.writerow(["Неизвестный вопрос."] + [answer]*3)
+                print(*[answer]*3, sep='\n')
 
 
 if __name__ == "__main__":
