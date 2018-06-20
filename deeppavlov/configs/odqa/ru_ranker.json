@@ -21,7 +21,7 @@
     "pipe": [
       {
         "name": "tfidf_ranker",
-        "top_n": 10,
+        "top_n": 3,
         "active": false,
         "in": [
           "question_raw"
