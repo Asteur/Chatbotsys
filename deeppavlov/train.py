@@ -35,13 +35,25 @@ parser.add_argument("output_path", help="Path to a folder with trained data.", t
 args = parser.parse_args()
 input_path = Path(args.input_path).resolve()
 output_path = Path(args.output_path).resolve()
+output_path.mkdir(exist_ok=True)
 
 CONFIG_PATH = str(get_project_root()) + '/deeppavlov/configs/odqa/ru_ranker.json'
 config = read_json(CONFIG_PATH)
 config['dataset_reader']['data_path'] = input_path
+db_path = os.path.join(output_path, 'data.db')
 config['dataset_reader']['save_path'] = config['dataset_iterator']['load_path'] = \
-config['chainer']['pipe'][1]['load_path'] = os.path.join(output_path, 'data.db')
-config['chainer']['pipe']['vectorizer']['save_path'] = config['chainer']['pipe']['vectorizer'][
+config['chainer']['pipe'][1]['load_path'] = db_path
+
+try:
+    os.remove(db_path)
+except OSError:
+    pass
+	
+config['chainer']['pipe'][0]['vectorizer']['save_path'] = config['chainer']['pipe'][0]['vectorizer'][
     'load_path'] = os.path.join(output_path, 'tfidf.npz')
 
-train_evaluate_model_from_config(config, pass_config=True)
+try:
+    train_evaluate_model_from_config(config, pass_config=True)
+    print("Successfully trained and stored result in {}".format(output_path))
+except Exception:
+    raise
