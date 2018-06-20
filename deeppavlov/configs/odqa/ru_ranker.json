@@ -72,10 +72,7 @@
   },
   "metadata": {
     "download": [
-      {
-        "url": "https://tfhub.dev/google/universal-sentence-encoder/1?tf-hub-format=compressed",
-        "subdir": "tfhub"
-      }
+      "http://lnsigo.mipt.ru/export/deeppavlov_data/ru_odqa.tar.gz"
     ]
   }
 }
