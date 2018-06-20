@@ -1,9 +1,12 @@
 """
 Copyright 2017 Neural Networks and Deep Learning lab, MIPT
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
+
     http://www.apache.org/licenses/LICENSE-2.0
+
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,10 +52,11 @@ class SQLiteDataIterator(DataFittingIterator):
                 download_dir = expand_path(Path(self.data_dir))
                 download_path = download_dir.joinpath(load_path.split("/")[-1])
                 download(download_path, load_path, force_download=False)
-            elif expand_path(load_path).is_file():
-                download_path = expand_path(load_path)
+            # elif expand_path(load_path).is_file():
+            #     download_path = expand_path(load_path)
             else:
-                raise ValueError('String path expected, got None.')
+                download_path = expand_path(load_path)
+                logger.warn("{} load_path yet doesn't exist".format(self.__class__.__name__))
         else:
             raise ValueError('String path expected, got None.')
 

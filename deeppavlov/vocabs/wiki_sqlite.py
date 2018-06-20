@@ -14,8 +14,7 @@ class WikiSQLiteVocab(SQLiteDataIterator):
     Get SQlite documents by ids.
     """
 
-    def __init__(self, load_path, data_dir: str = '', join_docs=True, return_all_content=False,
-                 **kwargs):
+    def __init__(self, load_path, data_dir: str = '', join_docs=True, return_all_content=False, **kwargs):
         """
         :param data_dir: a directory name where DB is located
         :param load_path: an URL to SQLite DB or local path to db file ('example.db')
